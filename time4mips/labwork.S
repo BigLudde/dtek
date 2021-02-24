@@ -20,113 +20,108 @@
   #
   # Please add your own code below this line
   #
-  .global delay
+   .global delay
   .global time2string
   .data
   .text
 
 hexasc:		
-	PUSH $s5 		# letter check
+	PUSH $s0		# letter check
+	andi	$s0,$s0,0x00000000
 	
-	andi	$a3,$a3,0x0000000f
-	slti 	$s5,$a3,10	#converter
-	beq	$a1,$0,letter
+	andi	$a0,$a0,0x0000000f
+	slti 	$s0,$a0,10	#converter
+	beq	$s0,$0,letter
 	nop
-	addi	$v0,$a3,48
-	POP $s5
+	addi	$v0,$a0,48
+	POP $s0
 	jr	$ra
 	nop
 	
 letter:
-	addi	$v0,$a3,55	#letter branch
-	POP $s5
+	addi	$v0,$a0,55	#letter branch
+	POP $s0
 	jr	$ra
 	nop
 	
 delay:
-	PUSH $s6
-	PUSH $s7
-	add	$s6,$s6,$a0
-	addi	$s7,$s7,4711	# delay counter
+	PUSH $s0
+	PUSH $s1
+	andi	$s0,$s0,0x00000000 
+	andi	$s1,$s1,0x00000000	
+	
+	add	$s0,$s0,$a0
+	andi	$a0,$a0,0x00000000
+	addi	$a0,$a0,1000
+	addi	$s1,$s1,4500	# delay counter
+	mul	$s1,$s1,$a0
+	andi	$a0,$a0,0x00000000
 delayloop1:
-	beq	$s6,$0,delaydone
+	beq	$s0,$0,delaydone
 	nop
-	addi	$s6,$s6,-1
+	addi	$s0,$s0,-1
 	j	delayloop2
 	nop
 	
 delaydone:
-	POP	$s7
-	POP	$s6
+	POP $s1
+	POP $s0
  	jr $ra
 	nop
 	
 delayloop2:
-	beq	$s7,$0,delayloop1
+	beq	$s1,$0,delayloop1
 	nop
-	addi	$s7,$s7,-1
+	addi	$s1,$s1,-1
 	j	delayloop2
 	nop
 
 	
 time2string:
 	PUSH $ra
-	PUSH $s0		# timestr adress
-	PUSH $s1		# time-info
-	PUSH $s2		# temporary shift storage
-	PUSH $s3		# prev deleter
-	PUSH $s4		# used for misc ascii chars
+	PUSH $s0 		# timestr adress
+	PUSH $s1 		# time-info
+	
+	andi	$s0,$s0,0x00000000 
+	andi	$s1,$s1,0x00000000
 	
 	move 	$s0,$a0 	# save adress
 	add 	$s1,$0,$a1 	# save info
 	
-	srl	$s3,$a1,16
-	sll	$s3,$s3,16
-	xor	$s1,$s1,$s3
-	xor	$s3,$s3,$s3
-	
-	srl	$a3,$s1,12	# get first number
+	andi	$a0,$s1,0x0000f000
+	srl	$a0,$s1,12	# get first number
 	jal	hexasc		#
 	nop
-	sll	$s3,$a3,12	#
-	xor	$s1,$s1,$s3	# remove first number from time-info
 	sb 	$v0,0($s0)	# add storeage of char 1 to string
 	
-	srl	$a3,$s1,8	# get second number
+	andi	$a0,$s1,0x00000f00
+	srl	$a0,$s1,8
 	jal	hexasc		#
 	nop
-	sll	$s3,$a3,8	#
-	xor	$s1,$s1,$s3	# remove first number from time-info
 	sb 	$v0,1($s0)	# add storeage of char 2 to string
 	
-	addi	$s4,$s4,58
-	sb 	$s4,2($s0)	# add ":" to storage (0x3a / 58)
+	andi	$a0,$a0,0x00000000
+	addi	$a0,$a0,58
+	sb 	$a0,2($s0)	# add ":" to storage (0x3a / 58)
 	
-	srl	$a3,$s1,4	# get third number
+	andi	$a0,$a0,0x00000000
+	andi	$a0,$s1,0x000000f0
+	srl	$a0,$s1,4
 	jal	hexasc		#
 	nop
-	sll	$s3,$a3,4	#
-	xor	$s1,$s1,$s3	# remove first number from time-info
 	sb 	$v0,3($s0)	# add storeage of char 3 to string
 	
-	srl	$a3,$s1,0	# get last number
+	andi	$a0,$s1,0x0000000f
 	jal	hexasc		#
 	nop	
 	sb 	$v0,4($s0)	# add storeage of char 4 to string
 	
-	addi	$s4,$s4,-58
-	sb 	$s4,5($s0)	#add "null" to storage (0)
-	
-	andi	$a3,$0,0x00000000
 	andi	$a0,$a0,0x00000000
-			
-	li	$v0,11		# printz
-	syscall
+	sb 	$a0,5($s0)	#add "null" to storage (0)
+	
+	andi	$a0,$a0,0x00000000
 	
 	
-	POP $s4
-	POP $s3
-	POP $s2
 	POP $s1
 	POP $s0
 	POP $ra
