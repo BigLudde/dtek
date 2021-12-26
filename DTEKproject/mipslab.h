@@ -1,0 +1,66 @@
+/* mipslab.h
+   Header file for all labs.
+   Written by Ludvig Edvinson, 2021
+
+   For copyright and licensing, see file COPYING */
+
+/* Declare display-related functions from mipslabfunc.c */
+void display_image(int x, const uint8_t *data);
+void display_init(void);
+void display_string(int line, char *s);
+void display_update(void);
+void display_update2(int line);
+uint8_t spi_send_recv(uint8_t data);
+void display_image2(int x, const uint8_t *data);
+void display_clear();
+void display_snek(const uint8_t *data);
+void display_clear();
+void display_choice(int line);
+
+/* Declare lab-related functions from mipslabfunc.c */
+char * itoaconv( int num );
+void labwork(void);
+int nextprime( int inval );
+void quicksleep(int cyc);
+void tick( unsigned int * timep );
+void Name_change(char* name);
+void Show_Led(int Led);
+
+/* Declare display_debug - a function to help debugging.
+
+   After calling display_debug,
+   the two middle lines of the display show
+   an address and its current contents.
+
+   There's one parameter: the address to read and display.
+
+   Note: When you use this function, you should comment out any
+   repeated calls to display_image; display_image overwrites
+   about half of the digits shown by display_debug.
+*/
+void display_debug( volatile int * const addr );
+
+/* Declare bitmap array containing font */
+extern const uint8_t const font[128*8];
+/* Declare bitmap array containing icon */
+extern const uint8_t const icon[128];
+/* Declare text buffer for display output */
+extern char textbuffer[4][16];
+extern const uint8_t const fonttmp[128*8];
+extern const uint8_t const sn[64];
+extern const uint8_t const ek[64];
+extern const uint8_t const snekfont[128];
+extern const uint8_t const pause1[128];
+extern const uint8_t const pause2[128];
+
+/* Declare functions written by students.
+   Note: Since we declare these functions here,
+   students must define their functions with the exact types
+   specified in the laboratory instructions. */
+/* Written as part of asm lab: delay, time2string */
+void delay(int);
+void time2string( char *, int );
+/* Written as part of i/o lab: getbtns, getsw, enable_interrupt */
+int getbtns(void);
+int getsw(void);
+void enable_interrupt(void);
